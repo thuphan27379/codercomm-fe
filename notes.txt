@@ -1,0 +1,32 @@
+Project Challenge
+Based on the CoderComm app of the case study, let's add a few more features to it:
+
+User can delete a Post that he/she is the author. 
+API: DELETE /api/posts/:id 
+
+User can edit his/her Posts.
+API: PUT /api/posts/:id 
+
+User can delete the Comment that he/she wrote.
+API: DELETE /api/comments/:id 
+
+After User decides to delete a Post/Comment, a window will pop up asking for confirmation.
+
+User can see a list of requests that he/she has sent.
+On the list, User can cancel the requests.
+API: GET /api/friends/requests/outgoing
+
+Demo App - CoderComm
+A demo of the app can be found here: CoderComm https://codercomm-dot-cs-platform-306304.et.r.appspot.com/login
+The Github repo of the frontend part: coderschool/codercomm-fe
+https://github.com/coderschool/codercomm-fe
+
+CoderComm Backend API
+The documentation of the backend API is made by swagger.io https://swagger.io/
+
+Link to the docs can be found here. https://app.swaggerhub.com/apis-docs/dhminh1024/CoderComm/1.0.0
+
+
+account codercomm social networking app:
+email: thuphan273@gmail.com
+pw: 123456789
