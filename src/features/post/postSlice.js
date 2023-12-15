@@ -5,6 +5,7 @@ import apiService from "../../app/apiService";
 import { POSTS_PER_PAGE } from "../../app/config";
 import { cloudinaryUpload } from "../../utils/cloudinary";
 import { getCurrentUserProfile } from "../user/userSlice";
+// import { confirmAlert } from "react-confirm-alert";
 
 //
 const initialState = {
@@ -28,7 +29,7 @@ const slice = createSlice({
       state.error = action.payload;
     },
     ///////fix bug about get list of posts of currentUser
-    // declare all posts are empty
+    // declare all posts are empty before getPosts
     resetPosts(state, action) {
       state.postsById = {};
       state.currentPagePosts = [];
@@ -64,12 +65,26 @@ const slice = createSlice({
       const { postId, reactions } = action.payload;
       state.postsById[postId].reactions = reactions;
     },
-    //
+    // delete a post
     deletePostSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
-      const { postId, reactions } = action.payload;
-      state.postsById[postId].reactions = reactions;
+      const { postId } = action.payload;
+
+      // Remove the deleted post from the state
+      delete state.postsById[postId];
+
+      // Remove the postId from currentPagePosts array
+      state.currentPagePosts = state.currentPagePosts.filter(
+        (id) => id !== postId
+      );
+    },
+    // edit a post
+    editPostSuccess(state, action) {
+      state.isLoading = false;
+      state.error = null;
+      const editedPost = action.payload;
+      state.postsById[editedPost._id] = editedPost;
     },
   },
 });
@@ -141,22 +156,51 @@ export const sendPostReaction =
   };
 
 // dang lam bai tap
-// delete post
+// delete a post
+// confirm delete
+
 export const deletePost =
   ({ postId }) =>
   async (dispatch) => {
+    // Show confirmation pop-up
+    const isConfirmed = window.confirm(
+      "Are you sure you want to delete this post?"
+    );
+    if (!isConfirmed) {
+      // If user cancels the deletion, do nothing
+      return;
+    }
+
     dispatch(slice.actions.startLoading());
     try {
-      const response = await apiService.post(`/posts`, {
-        targetType: "Delete",
-        targetId: postId,
+      // Correct the endpoint to delete a post
+      await apiService.delete(`/posts/${postId}`);
+      dispatch(slice.actions.deletePostSuccess({ postId }));
+
+      // Show success notification
+      toast.success("Post deleted successfully");
+    } catch (error) {
+      dispatch(slice.actions.hasError(error.message));
+      toast.error(error.message);
+    }
+  };
+
+// edit a post
+export const editPost =
+  ({ postId, content, image }) =>
+  async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      // upload image to cloudinary.com - from PostForm.js
+      const imageUrl = await cloudinaryUpload(image);
+      const response = await apiService.put(`/posts/${postId}`, {
+        content,
+        image: imageUrl,
       });
-      dispatch(
-        slice.actions.deletePostSuccess({
-          postId,
-          reactions: response.data,
-        })
-      );
+      dispatch(slice.actions.editPostSuccess(response.data));
+      console.log(response.data);
+      dispatch(getPosts({ userId: response.data.author }));
+      toast.success("Post edited successfully");
     } catch (error) {
       dispatch(slice.actions.hasError(error.message));
       toast.error(error.message);

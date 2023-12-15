@@ -9,8 +9,10 @@ const initialState = {
   currentPageUsers: [],
   usersById: {},
   totalPages: 1,
+  outgoingRequests: [],
 };
-// state //
+
+// states //
 // function createSlice
 const slice = createSlice({
   name: "friend",

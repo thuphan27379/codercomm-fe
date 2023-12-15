@@ -15,7 +15,7 @@ import AddFriend from "../features/friend/AddFriend";
 import FriendRequests from "../features/friend/FriendRequests";
 import FriendList from "../features/friend/FriendList";
 
-//
+//user profile page
 const TabsWrapperStyle = styled("div")(({ theme }) => ({
   zIndex: 9,
   bottom: 0,
