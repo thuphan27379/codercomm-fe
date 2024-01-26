@@ -10,18 +10,23 @@ import {
   Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { getFriendRequests, cancelRequest } from "./friendSlice";
+import { getOutgoingSents, cancelRequest } from "./friendSlice";
 import UserCard from "./UserCard";
 import SearchInput from "../../components/SearchInput";
 
 //
-function FriendRequests() {
+function OutgoingSents() {
   const [filterName, setFilterName] = useState("");
   const [page, setPage] = React.useState(1);
 
-  const { currentPageUsers, usersById, totalUsers, totalPages } = useSelector(
-    (state) => state.friend
-  );
+  const {
+    currentPageUsers,
+    usersById,
+    totalUsers,
+    totalPages,
+    outgoingRequests,
+  } = useSelector((state) => state.friend);
+  console.log(outgoingRequests);
 
   const users = currentPageUsers.map((userId) => usersById[userId]);
   const dispatch = useDispatch();
@@ -31,7 +36,7 @@ function FriendRequests() {
   };
 
   useEffect(() => {
-    dispatch(getFriendRequests({ filterName, page }));
+    dispatch(getOutgoingSents({ filterName, page }));
   }, [filterName, page, dispatch]);
 
   const handleCancelRequest = (targetUserId) => {
@@ -42,7 +47,7 @@ function FriendRequests() {
   return (
     <Container>
       <Typography variant="h4" sx={{ mb: 3 }}>
-        Friend Requests
+        Sent Friend Requests
       </Typography>
 
       <Card sx={{ p: 3 }}>
@@ -71,17 +76,10 @@ function FriendRequests() {
 
         {/* Grid for displaying user cards */}
         <Grid container spacing={3} my={1}>
-          {users.map((user) => (
+          {outgoingRequests.map((user) => (
             <Grid key={user._id} item xs={12} md={4}>
               <UserCard profile={user} />
               {/* Cancel Request button */}
-              <Button
-                variant="outlined"
-                color="error"
-                onClick={() => handleCancelRequest(user._id)}
-              >
-                Cancel Request
-              </Button>
             </Grid>
           ))}
         </Grid>
@@ -90,4 +88,4 @@ function FriendRequests() {
   );
 }
 
-export default FriendRequests;
+export default OutgoingSents;

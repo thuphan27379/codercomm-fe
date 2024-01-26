@@ -32,9 +32,6 @@ function CommentCard({ comment }) {
 
   const open = Boolean(anchorEl);
 
-  // a window will pop up asking for confirmation to delete.
-  // ?!?!
-
   // handleDelete a post
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -43,12 +40,10 @@ function CommentCard({ comment }) {
     // Dispatch the deletePost action with the postId
     if (currentUser) {
     }
-    dispatch(deleteComment({ commentId: comment._id }));
+    dispatch(deleteComment({ commentId: comment._id, postId: comment.post }));
 
     handleClose(); //close popover
   };
-
-  // a window will pop up asking for confirmation to delete.
 
   //
   return (

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   Box,
   Link,
@@ -14,14 +14,28 @@ import {
 import { Link as RouterLink } from "react-router-dom";
 import { fDate } from "../../utils/formatTime";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
+import { useForm } from "react-hook-form";
+import * as Yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
 
 import PostReaction from "./PostReaction";
 import CommentForm from "../comment/CommentForm";
 import CommentList from "../comment/CommentList";
+import { FUploadImage } from "../../components/form";
 
 import { useDispatch, useSelector } from "react-redux";
 import { deletePost } from "../post/postSlice";
 import { editPost } from "../post/postSlice";
+
+//
+const yupSchema = Yup.object().shape({
+  content: Yup.string().required("Content is required"),
+});
+
+const defaultValues = {
+  content: "",
+  image: null,
+};
 
 //show list of posts
 function PostCard({ post }) {
@@ -38,9 +52,7 @@ function PostCard({ post }) {
   };
 
   const open = Boolean(anchorEl);
-
   // a window will pop up asking for confirmation to delete.
-  // ?!?!
 
   // handleDelete a post
   const dispatch = useDispatch();
@@ -65,7 +77,9 @@ function PostCard({ post }) {
 
   const handleSave = () => {
     // Dispatch the editPost action with the edited content and post ID
-    dispatch(editPost({ postId: post._id, content: editedContent }));
+    dispatch(
+      editPost({ postId: post._id, content: editedContent, image: post.image })
+    );
     setIsEditing(false); // Reset editing mode after saving changes
     handleClose();
   };
@@ -79,6 +93,31 @@ function PostCard({ post }) {
     // Stop the event propagation to prevent closing the popover when clicking on the input
     e.stopPropagation();
   };
+
+  //
+  const methods = useForm({
+    resolver: yupResolver(yupSchema),
+    defaultValues,
+  });
+
+  const { setValue } = methods;
+
+  // edit image
+  const handleDrop = useCallback(
+    (acceptedFiles) => {
+      const file = acceptedFiles[0];
+
+      if (file) {
+        setValue(
+          "image",
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        );
+      }
+    },
+    [setValue]
+  );
 
   //
   return (
@@ -114,6 +153,7 @@ function PostCard({ post }) {
         }
       />
 
+      {/* popover */}
       <Popover
         open={open}
         anchorEl={anchorEl}
@@ -138,6 +178,7 @@ function PostCard({ post }) {
         )}{" "}
       </Popover>
 
+      {/* edit post */}
       <Stack spacing={2} sx={{ p: 3 }}>
         <Typography>{post.content}</Typography>
         {isEditing && (
@@ -148,6 +189,7 @@ function PostCard({ post }) {
             onMouseDown={handleInputMouseDown}
           />
         )}
+
         {post.image && (
           <Box
             sx={{
@@ -158,6 +200,15 @@ function PostCard({ post }) {
             }}
           >
             <img src={post.image} alt="post" />
+
+            {/* edit image */}
+            <FUploadImage
+              // upload image with the Post
+              name="image"
+              accept="image/*"
+              maxSize={3145728}
+              onDrop={handleDrop}
+            />
           </Box>
         )}
 

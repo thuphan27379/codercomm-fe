@@ -81,7 +81,7 @@ const slice = createSlice({
       const { targetUserId, ...friendship } = action.payload;
       state.usersById[targetUserId].friendship = friendship;
     },
-    //cancel Request Success
+    //cancel Request Success////////////////////
     cancelRequestSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
@@ -94,6 +94,14 @@ const slice = createSlice({
       state.error = null;
       const { targetUserId } = action.payload;
       state.usersById[targetUserId].friendship = null;
+    },
+    //sent friend request, outgoing///////////////////////
+    getOutgoingSentsSuccess(state, action) {
+      state.isLoading = false;
+      state.error = null;
+
+      console.log(action.payload);
+      state.outgoingRequests = action.payload.users;
     },
   },
 });
@@ -242,3 +250,22 @@ export const removeFriend = (targetUserId) => async (dispatch) => {
     toast.error(error.message);
   }
 };
+
+// getOutgoingSents
+// getOutgoingSentsSuccess
+export const getOutgoingSents =
+  ({ filterName, page = 1, limit = 12 }) =>
+  async (dispatch) => {
+    dispatch(slice.actions.startLoading());
+    try {
+      const params = { page, limit };
+      const response = await apiService.get("/friends/requests/outgoing", {
+        params,
+      });
+      console.log(response);
+      dispatch(slice.actions.getOutgoingSentsSuccess(response.data));
+    } catch (error) {
+      dispatch(slice.actions.hasError(error.message));
+      toast.error(error.message); //react toastify
+    }
+  };

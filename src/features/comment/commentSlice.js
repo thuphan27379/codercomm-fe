@@ -13,6 +13,7 @@ const initialState = {
   currentPageByPost: {},
   commentsById: {},
 };
+
 // createSlice for all slices
 const slice = createSlice({
   name: "comment",
@@ -60,10 +61,12 @@ const slice = createSlice({
     deleteCommentSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
-      const { commentId } = action.payload;
+      const { commentId, postId } = action.payload;
 
       // Remove the deleted comment from the state
       delete state.commentsById[commentId];
+
+      state.totalCommentsByPost[postId]--;
 
       // Remove the commentId from commentsByPost array
       state.commentsByPost = Object.fromEntries(
@@ -107,6 +110,7 @@ export const getComments =
       toast.error(error.message);
     }
   };
+
 // create a comment
 export const createComment =
   ({ postId, content }) =>
@@ -124,6 +128,7 @@ export const createComment =
       toast.error(error.message);
     }
   };
+
 // reaction on a comment
 export const sendCommentReaction =
   ({ commentId, emoji }) =>
@@ -149,9 +154,8 @@ export const sendCommentReaction =
 
 // delete a comment
 // confirm delete
-
 export const deleteComment =
-  ({ commentId }) =>
+  ({ postId, commentId }) =>
   async (dispatch) => {
     // Show confirmation pop-up
     const isConfirmed = window.confirm(
@@ -168,6 +172,7 @@ export const deleteComment =
       // Correct the endpoint to delete a comment
       await apiService.delete(`/comments/${commentId}`);
       dispatch(slice.actions.deleteCommentSuccess({ commentId }));
+      dispatch(getComments({ postId }));
 
       // Show success notification
       toast.success("Comment deleted successfully");

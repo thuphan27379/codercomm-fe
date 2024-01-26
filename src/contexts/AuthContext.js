@@ -62,6 +62,7 @@ const reducer = (state, action) => {
         twitterLink,
         friendCount,
         postCount,
+        commentCount,
       } = action.payload;
       return {
         ...state,
@@ -81,6 +82,7 @@ const reducer = (state, action) => {
           twitterLink,
           friendCount,
           postCount,
+          commentCount,
         },
       };
     default:
@@ -146,6 +148,7 @@ function AuthProvider({ children }) {
 
     initialize();
   }, []);
+
   // update profile: reset user account page
   useEffect(() => {
     if (updatedProfile)

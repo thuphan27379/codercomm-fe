@@ -15,11 +15,11 @@ DONE
 *User can edit his/her Posts.
 API: PUT /api/posts/:id 
 1. popover DONE
-2. function editPost: BE postController.updateSinglePost
+2. function editPost: BE postController.updateSinglePost & image
 input
 save
-reset
-DONE
+reset 
+update image 
 
 *User can delete the Comment that he/she wrote.
 API: DELETE /api/comments/:id 
@@ -28,7 +28,8 @@ API: DELETE /api/comments/:id
 get commentId, validate author
 delete comment
 confirm
-reset
+reset 
+update comment count DONE
 
 *After User decides to delete a Post/Comment, a window will pop up asking for confirmation.
 -delete confirm popup
@@ -39,6 +40,7 @@ API: GET /api/friends/requests/outgoing
 BE
 -list of friend requests sent: friendController.getSentFriendRequestList
 -cancel the friend requests sent: friendController.cancelFriendRequest
+status: 'pending'
 
 ------
 Demo App - CoderComm

@@ -5,7 +5,6 @@ import apiService from "../../app/apiService";
 import { POSTS_PER_PAGE } from "../../app/config";
 import { cloudinaryUpload } from "../../utils/cloudinary";
 import { getCurrentUserProfile } from "../user/userSlice";
-// import { confirmAlert } from "react-confirm-alert";
 
 //
 const initialState = {
@@ -14,6 +13,7 @@ const initialState = {
   postsById: {},
   currentPagePosts: [],
 };
+
 // createSlice all the slices
 const slice = createSlice({
   name: "post",
@@ -34,7 +34,7 @@ const slice = createSlice({
       state.postsById = {};
       state.currentPagePosts = [];
     },
-    //
+    // get all posts
     getPostsSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
@@ -48,7 +48,7 @@ const slice = createSlice({
       });
       state.totalPosts = count;
     },
-    //
+    // create a new post
     createPostSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
@@ -58,7 +58,7 @@ const slice = createSlice({
       state.postsById[newPost._id] = newPost;
       state.currentPagePosts.unshift(newPost._id);
     },
-    //
+    // reaction a post
     sendPostReactionSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
@@ -79,12 +79,37 @@ const slice = createSlice({
         (id) => id !== postId
       );
     },
-    // edit a post
+    // edit a post & image
     editPostSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
+
+      // Check if the edited post data is available in the response
+      // if (action.payload.success && action.payload.data) {
       const editedPost = action.payload;
-      state.postsById[editedPost._id] = editedPost;
+      console.log(editedPost);
+
+      // Find the index of the edited post in currentPagePosts
+      const editedPostIndex = state.currentPagePosts.indexOf(editedPost._id);
+
+      // Check if the edited post has a new image URL /////////////
+      const newImage = editedPost.image
+        ? editedPost.image
+        : state.postsById[editedPost._id].image;
+
+      // Update the post's content and image URL ///////////
+      state.postsById[editedPost._id] = {
+        ...state.postsById[editedPost._id],
+        content: editedPost.content,
+        image: newImage,
+      };
+
+      // If the edited post is in the current page posts, update it
+      if (editedPostIndex !== -1) {
+        state.currentPagePosts[editedPostIndex] = editedPost._id;
+        // }
+      }
+      // state.postsById[editedPost._id] = editedPost;
     },
   },
 });
@@ -123,6 +148,7 @@ export const createPost =
         content,
         image: imageUrl,
       });
+
       dispatch(slice.actions.createPostSuccess(response.data));
       toast.success("Post successfully");
       dispatch(getCurrentUserProfile());
@@ -158,7 +184,6 @@ export const sendPostReaction =
 // dang lam bai tap
 // delete a post
 // confirm delete
-
 export const deletePost =
   ({ postId }) =>
   async (dispatch) => {
@@ -186,10 +211,12 @@ export const deletePost =
   };
 
 // edit a post
+// edit a image in the post ???
 export const editPost =
   ({ postId, content, image }) =>
   async (dispatch) => {
     dispatch(slice.actions.startLoading());
+
     try {
       // upload image to cloudinary.com - from PostForm.js
       const imageUrl = await cloudinaryUpload(image);
@@ -197,8 +224,13 @@ export const editPost =
         content,
         image: imageUrl,
       });
+
+      // Log the entire response
+      console.log("Edit Post Response:", response);
+
       dispatch(slice.actions.editPostSuccess(response.data));
       console.log(response.data);
+
       dispatch(getPosts({ userId: response.data.author }));
       toast.success("Post edited successfully");
     } catch (error) {

@@ -18,7 +18,7 @@ function CommentList({ postId }) {
   } = useSelector(
     (state) => ({
       commentsByPost: state.comment.commentsByPost[postId],
-      totalComments: state.comment.totalCommentsByPost[postId],
+      totalComments: state.comment.totalCommentsByPost[postId] || 0,
       currentPage: state.comment.currentPageByPost[postId] || 1,
       commentsById: state.comment.commentsById,
       isLoading: state.comment.isLoading,
@@ -41,13 +41,14 @@ function CommentList({ postId }) {
     renderComments = (
       <Stack spacing={1.5}>
         {comments.map((comment) => (
-          <CommentCard key={comment._id} comment={comment} />
+          <CommentCard key={comment?._id} comment={comment} />
         ))}
       </Stack>
     );
   } else if (isLoading) {
     renderComments = <LoadingScreen />;
   }
+
   //
   return (
     <Stack spacing={1.5}>
