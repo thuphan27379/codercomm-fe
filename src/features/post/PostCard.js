@@ -10,22 +10,24 @@ import {
   IconButton,
   Popover,
   Button,
+  alpha,
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
-import { fDate } from "../../utils/formatTime";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { useForm } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Modal from "@mui/material/Modal";
+import { useDispatch, useSelector } from "react-redux";
+import { LoadingButton } from "@mui/lab";
 
+import { fDate } from "../../utils/formatTime";
 import PostReaction from "./PostReaction";
 import CommentForm from "../comment/CommentForm";
 import CommentList from "../comment/CommentList";
-import { FUploadImage } from "../../components/form";
-
-import { useDispatch, useSelector } from "react-redux";
-import { deletePost } from "../post/postSlice";
-import { editPost } from "../post/postSlice";
+import { createPost, deletePost } from "../post/postSlice";
+import { FTextField, FUploadImage } from "../../components/form";
+// import { editPost } from "../post/postSlice";
 
 //
 const yupSchema = Yup.object().shape({
@@ -69,20 +71,22 @@ function PostCard({ post }) {
 
   // handleEdit a post
   const [editedContent, setEditedContent] = React.useState(post.content); // New state for edited content
-  const [isEditing, setIsEditing] = React.useState(false); // State to track editing mode
+  const [isEditing] = React.useState(false); // State to track editing mode
+  const [openModal, setOpenModal] = React.useState(false);
 
-  const handleEdit = () => {
-    setIsEditing(true); // Set editing mode to true when the "Edit" button is clicked
-  };
+  // const handleEdit = () => {
+  //   // dispatch(PostForm({}));
+  //   setIsEditing(true); // Set editing mode to true when the "Edit" button is clicked
+  // };
 
-  const handleSave = () => {
-    // Dispatch the editPost action with the edited content and post ID
-    dispatch(
-      editPost({ postId: post._id, content: editedContent, image: post.image })
-    );
-    setIsEditing(false); // Reset editing mode after saving changes
-    handleClose();
-  };
+  // const handleSave = () => {
+  //   // Dispatch the editPost action with the edited content and post ID
+  //   dispatch(
+  //     editPost({ postId: post._id, content: editedContent, image: post.image })
+  //   );
+  //   setIsEditing(false); // Reset editing mode after saving changes
+  //   handleClose();
+  // };
 
   const handleContentChange = (e) => {
     e.stopPropagation();
@@ -100,9 +104,40 @@ function PostCard({ post }) {
     defaultValues,
   });
 
-  const { setValue } = methods;
+  // const { setValue } = methods;
 
   // edit image
+  // const handleDrop = useCallback(
+  //   (acceptedFiles) => {
+  //     const file = acceptedFiles[0];
+
+  //     if (file) {
+  //       setValue(
+  //         "image",
+  //         Object.assign(file, {
+  //           preview: URL.createObjectURL(file),
+  //         })
+  //       );
+  //     }
+  //   },
+  //   [setValue]
+  // );
+
+  // modal edit
+  const handleOpenModal = () => setOpenModal(true);
+  const handleCloseModal = () => setOpenModal(false);
+
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+    reset,
+    setValue,
+  } = methods;
+
+  const onSubmit = (data) => {
+    dispatch(createPost(data)).then(() => reset());
+  };
+
   const handleDrop = useCallback(
     (acceptedFiles) => {
       const file = acceptedFiles[0];
@@ -118,6 +153,8 @@ function PostCard({ post }) {
     },
     [setValue]
   );
+
+  const { isLoading } = useSelector((state) => state.post);
 
   //
   return (
@@ -165,17 +202,70 @@ function PostCard({ post }) {
       >
         <Button sx={{ p: 1, fontSize: 10 }} onClick={handleDelete}>
           Delete
-        </Button>{" "}
+        </Button>
         |
-        {!isEditing ? (
-          <Button sx={{ p: 1, fontSize: 10 }} onClick={handleEdit}>
+        <div>
+          <Button sx={{ p: 1, fontSize: 10 }} onClick={handleOpenModal}>
             Edit
           </Button>
-        ) : (
-          <Button sx={{ p: 1, fontSize: 10 }} onClick={handleSave}>
-            Save
-          </Button>
-        )}{" "}
+          {/*  */}
+          <Modal
+            open={openModal}
+            onClose={handleCloseModal}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Card sx={{ p: 3 }}>
+              <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+                <Stack spacing={2}>
+                  <FTextField
+                    // content of the Post
+                    name="content"
+                    multiline
+                    fullWidth
+                    rows={4}
+                    placeholder="Share what you are thinking here..."
+                    sx={{
+                      "& fieldset": {
+                        borderWidth: `1px !important`,
+                        borderColor: alpha("#919EAB", 0.32),
+                      },
+                    }}
+                  />
+
+                  {/* UPLOAD A FILE: btn choose File  */}
+                  {/* <input type="file" ref={fileInput} onChange={handleFile} /> */}
+                  <FUploadImage
+                    // upload image with the Post
+                    name="image"
+                    accept="image/*"
+                    maxSize={3145728}
+                    onDrop={handleDrop}
+                  />
+
+                  <Box
+                    // button submit a Post
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <LoadingButton
+                      // loading...
+                      type="submit"
+                      variant="contained"
+                      size="small"
+                      loading={isSubmitting || isLoading}
+                    >
+                      Post
+                    </LoadingButton>
+                  </Box>
+                </Stack>
+              </FormProvider>
+            </Card>
+          </Modal>
+        </div>
       </Popover>
 
       {/* edit post */}
@@ -200,15 +290,6 @@ function PostCard({ post }) {
             }}
           >
             <img src={post.image} alt="post" />
-
-            {/* edit image */}
-            <FUploadImage
-              // upload image with the Post
-              name="image"
-              accept="image/*"
-              maxSize={3145728}
-              onDrop={handleDrop}
-            />
           </Box>
         )}
 

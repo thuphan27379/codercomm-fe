@@ -1,6 +1,5 @@
 import React, { useCallback } from "react";
 import { Box, Card, alpha, Stack } from "@mui/material";
-
 import { useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
@@ -9,8 +8,6 @@ import * as Yup from "yup";
 
 import { FormProvider, FTextField, FUploadImage } from "../../components/form";
 import { createPost } from "./postSlice";
-
-// import { useRef } from "react";
 
 //
 const yupSchema = Yup.object().shape({
