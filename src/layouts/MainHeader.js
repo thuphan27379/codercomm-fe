@@ -12,7 +12,7 @@ import { Avatar, Divider } from "@mui/material";
 import useAuth from "../hooks/useAuth";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 
-//
+// bo shadow cua appbar
 function MainHeader() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -41,6 +41,7 @@ function MainHeader() {
   };
 
   const menuId = "primary-search-account-menu";
+
   //
   const renderMenu = (
     <Menu
@@ -94,6 +95,7 @@ function MainHeader() {
       </MenuItem>
     </Menu>
   );
+
   //
   return (
     <Box sx={{ mb: 3 }}>
@@ -108,6 +110,7 @@ function MainHeader() {
           >
             <Logo />
           </IconButton>
+
           <Typography
             variant="h6"
             noWrap

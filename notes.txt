@@ -12,7 +12,7 @@ confirm
 reset posts
 DONE
 
-*User can edit his/her Posts.
+*User can edit his/her Posts. (text & image)
 API: PUT /api/posts/:id 
 1. popover DONE
 2. function editPost: BE postController.updateSinglePost & image

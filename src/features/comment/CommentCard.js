@@ -9,11 +9,11 @@ import {
   Popover,
   Button,
 } from "@mui/material";
-import { fDate } from "../../utils/formatTime";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
-import CommentReaction from "./CommentReaction";
 import { useDispatch, useSelector } from "react-redux";
+
+import { fDate } from "../../utils/formatTime";
+import CommentReaction from "./CommentReaction";
 import { deleteComment } from "./commentSlice";
 
 //
@@ -47,8 +47,14 @@ function CommentCard({ comment }) {
 
   //
   return (
-    <Stack direction="row" spacing={2} margin={0}>
+    <Stack
+      direction="row"
+      spacing={2}
+      margin={0}
+      justifyContent={"space-between"}
+    >
       <Avatar alt={comment.author?.name} src={comment.author?.avatarUrl} />
+
       <Paper sx={{ p: 1.5, flexGrow: 1, bgcolor: "background.neutral" }}>
         <Stack
           direction="row"
@@ -58,11 +64,13 @@ function CommentCard({ comment }) {
           <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
             {comment.author?.name}
           </Typography>
+
           <div>
             <IconButton>
               <MoreVertIcon onClick={handleClick} sx={{ fontSize: 30 }} />
             </IconButton>
           </div>
+
           <Popover
             open={open}
             anchorEl={anchorEl}
@@ -77,6 +85,7 @@ function CommentCard({ comment }) {
             </Button>{" "}
           </Popover>
         </Stack>
+
         <Typography variant="caption" sx={{ color: "text.disabled" }}>
           {fDate(comment.createdAt)}
         </Typography>

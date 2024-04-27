@@ -181,7 +181,7 @@ export const sendPostReaction =
     }
   };
 
-// dang lam bai tap
+// lam bai tap M2.3
 // delete a post
 // confirm delete
 export const deletePost =

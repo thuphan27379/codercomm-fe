@@ -1,7 +1,9 @@
 import React, { useCallback } from "react";
-import { Box, Card, alpha, Stack } from "@mui/material";
 import { useForm } from "react-hook-form";
+// import { useFormContext, Controller } from "react-hook-form";
+
 import { useDispatch, useSelector } from "react-redux";
+import { Box, Card, alpha, Stack } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -9,7 +11,7 @@ import * as Yup from "yup";
 import { FormProvider, FTextField, FUploadImage } from "../../components/form";
 import { createPost } from "./postSlice";
 
-//
+//create a new post with image
 const yupSchema = Yup.object().shape({
   content: Yup.string().required("Content is required"),
 });

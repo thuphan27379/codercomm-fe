@@ -14,22 +14,23 @@ import {
 } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-import { FormProvider, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Modal from "@mui/material/Modal";
 import { useDispatch, useSelector } from "react-redux";
 import { LoadingButton } from "@mui/lab";
+// import { useFormContext, Controller } from "react-hook-form";
 
 import { fDate } from "../../utils/formatTime";
 import PostReaction from "./PostReaction";
 import CommentForm from "../comment/CommentForm";
 import CommentList from "../comment/CommentList";
-import { createPost, deletePost } from "../post/postSlice";
-import { FTextField, FUploadImage } from "../../components/form";
+import { deletePost, editPost } from "../post/postSlice";
+import { FTextField, FUploadImage, FormProvider } from "../../components/form";
 // import { editPost } from "../post/postSlice";
 
-//
+//show a post with comment and reaction, delete/edit
 const yupSchema = Yup.object().shape({
   content: Yup.string().required("Content is required"),
 });
@@ -135,7 +136,12 @@ function PostCard({ post }) {
   } = methods;
 
   const onSubmit = (data) => {
-    dispatch(createPost(data)).then(() => reset());
+    if (!data.image && post.image) {
+      data.image = post.image;
+    }
+    dispatch(
+      editPost({ postId: post._id, content: data.content, image: data.image })
+    ).then(() => reset());
   };
 
   const handleDrop = useCallback(
@@ -208,23 +214,31 @@ function PostCard({ post }) {
           <Button sx={{ p: 1, fontSize: 10 }} onClick={handleOpenModal}>
             Edit
           </Button>
-          {/*  */}
+
+          {/* popup modal delete & edit */}
           <Modal
             open={openModal}
             onClose={handleCloseModal}
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Card sx={{ p: 3 }}>
+            <Card
+              sx={{
+                p: 3,
+                width: 500,
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
                 <Stack spacing={2}>
                   <FTextField
-                    // content of the Post
+                    // content of the Post, not placeholder?!?!
                     name="content"
                     multiline
                     fullWidth
                     rows={4}
-                    placeholder="Share what you are thinking here..."
+                    placeholder={post.content}
                     sx={{
                       "& fieldset": {
                         borderWidth: `1px !important`,
@@ -236,7 +250,7 @@ function PostCard({ post }) {
                   {/* UPLOAD A FILE: btn choose File  */}
                   {/* <input type="file" ref={fileInput} onChange={handleFile} /> */}
                   <FUploadImage
-                    // upload image with the Post
+                    // upload image with the Post, the image of the post?!?!
                     name="image"
                     accept="image/*"
                     maxSize={3145728}
@@ -253,12 +267,21 @@ function PostCard({ post }) {
                   >
                     <LoadingButton
                       // loading...
+                      type="cancel"
+                      variant="contained"
+                      size="small"
+                      // loading={isSubmitting || isLoading}
+                    >
+                      Cancel
+                    </LoadingButton>
+                    <LoadingButton
+                      // loading...
                       type="submit"
                       variant="contained"
                       size="small"
                       loading={isSubmitting || isLoading}
                     >
-                      Post
+                      Edit
                     </LoadingButton>
                   </Box>
                 </Stack>
@@ -268,18 +291,19 @@ function PostCard({ post }) {
         </div>
       </Popover>
 
-      {/* edit post */}
+      {/* content */}
       <Stack spacing={2} sx={{ p: 3 }}>
         <Typography>{post.content}</Typography>
-        {isEditing && (
+        {/* {isEditing && (
           <input
             type="text"
             value={editedContent}
             onChange={handleContentChange}
             onMouseDown={handleInputMouseDown}
           />
-        )}
+        )} */}
 
+        {/* media */}
         {post.image && (
           <Box
             sx={{
