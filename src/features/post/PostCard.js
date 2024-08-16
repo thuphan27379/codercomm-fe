@@ -28,7 +28,6 @@ import CommentForm from "../comment/CommentForm";
 import CommentList from "../comment/CommentList";
 import { deletePost, editPost } from "../post/postSlice";
 import { FTextField, FUploadImage, FormProvider } from "../../components/form";
-// import { editPost } from "../post/postSlice";
 
 // 1. khi edit post, chýa lýu l?i ðý?c content v?i image bài post. Khi click cancel th? v?n update luôn
 // 2. ? tab send request, b?m cancel request th? b? l?i nhý h?nh
@@ -151,9 +150,12 @@ function PostCard({ post }) {
     if (!data.image && post.image) {
       data.image = post.image;
     }
+
     dispatch(
       editPost({ postId: post._id, content: data.content, image: data.image })
     ).then(() => reset());
+
+    handleClose(); //close popover
   };
 
   const handleDrop = useCallback(
@@ -279,11 +281,12 @@ function PostCard({ post }) {
                   >
                     <LoadingButton
                       // loading...
-                      type="cancel"
+                      // type="cancel"
                       variant="contained"
                       size="small"
-                      onClose={handleCloseModal} //
-                      loading={isSubmitting || isLoading}
+                      onClick={handleCloseModal} //
+                      // loading={isSubmitting || isLoading}
+                      disabled={isSubmitting || isLoading}
                     >
                       Cancel
                     </LoadingButton>
