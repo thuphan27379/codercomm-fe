@@ -85,8 +85,14 @@ const slice = createSlice({
     cancelRequestSuccess(state, action) {
       state.isLoading = false;
       state.error = null;
+
       const { targetUserId } = action.payload;
       state.usersById[targetUserId].friendship = null;
+
+      //
+      state.outgoingRequests = state.outgoingRequests.filter(
+        (request) => request.friendship.to !== targetUserId
+      );
     },
     //remove Friend Success
     removeFriendSuccess(state, action) {

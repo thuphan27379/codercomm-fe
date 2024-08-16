@@ -1,5 +1,9 @@
-import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from "../app/config";
 import axios from "axios";
+import {
+  CLOUDINARY_CLOUD_NAME,
+  CLOUDINARY_UPLOAD_PRESET,
+  CLOUDINARY_URL,
+} from "../app/config";
 
 // UPLOAD AVATAR IMAGE IN REACT APP by cloudinary.com
 export const cloudinaryUpload = async (image) => {
@@ -12,6 +16,7 @@ export const cloudinaryUpload = async (image) => {
 
     const response = await axios({
       url: `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+      // url: CLOUDINARY_URL,
       method: "POST",
       data: formData,
       headers: { "Content-Type": "multipart/form-data" },

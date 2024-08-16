@@ -10,9 +10,9 @@ import {
   Button,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { getOutgoingSents, cancelRequest } from "./friendSlice";
-import UserCard from "./UserCard";
 import SearchInput from "../../components/SearchInput";
+import UserCard from "./UserCard";
+import { getOutgoingSents, cancelRequest } from "./friendSlice";
 
 //
 function OutgoingSents() {
@@ -24,7 +24,7 @@ function OutgoingSents() {
     usersById,
     totalUsers,
     totalPages,
-    outgoingRequests,
+    outgoingRequests, //
   } = useSelector((state) => state.friend);
   console.log(outgoingRequests);
 
@@ -35,10 +35,12 @@ function OutgoingSents() {
     setFilterName(searchQuery);
   };
 
+  // friend slide
   useEffect(() => {
     dispatch(getOutgoingSents({ filterName, page }));
   }, [filterName, page, dispatch]);
 
+  // cancel request
   const handleCancelRequest = (targetUserId) => {
     dispatch(cancelRequest(targetUserId));
   };

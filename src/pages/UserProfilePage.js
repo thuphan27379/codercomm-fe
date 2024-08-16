@@ -1,11 +1,12 @@
 import React, { useEffect } from "react";
 import { Card, Container } from "@mui/material";
-import Profile from "../features/user/Profile";
-import ProfileCover from "../features/user/ProfileCover";
 import { useParams } from "react-router-dom";
 import { shallowEqual, useDispatch, useSelector } from "react-redux";
+
 import { getUser } from "../features/user/userSlice";
 import LoadingScreen from "../components/LoadingScreen";
+import Profile from "../features/user/Profile";
+import ProfileCover from "../features/user/ProfileCover";
 
 //
 function UserProfilePage() {

@@ -31,7 +31,7 @@ function ProfileAbout({ profile }) {
           </IconStyle>
           <Typography variant="body2">
             <Link component="span" variant="subtitle2" color="text.primary">
-              {city} {country}
+              {city}, {country}.
             </Link>
           </Typography>
         </Stack>

@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useState } from "react";
 import {
   Box,
   Link,
@@ -30,18 +30,29 @@ import { deletePost, editPost } from "../post/postSlice";
 import { FTextField, FUploadImage, FormProvider } from "../../components/form";
 // import { editPost } from "../post/postSlice";
 
+// 1. khi edit post, chýa lýu l?i ðý?c content v?i image bài post. Khi click cancel th? v?n update luôn
+// 2. ? tab send request, b?m cancel request th? b? l?i nhý h?nh
+
 //show a post with comment and reaction, delete/edit
 const yupSchema = Yup.object().shape({
   content: Yup.string().required("Content is required"),
 });
 
-const defaultValues = {
-  content: "",
-  image: null,
-};
+// const defaultValues = {
+//   content: "",
+//   image: null,
+// };
 
 //show list of posts
 function PostCard({ post }) {
+  // default value fai nam ben trong function
+  const defaultValues = {
+    content: post.content,
+    image: post.image,
+  };
+
+  const [IsEditing, setIsEditing] = useState(true);
+
   //popover on icon to delete or edit
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -51,7 +62,7 @@ function PostCard({ post }) {
 
   const handleClose = () => {
     setAnchorEl(null);
-    // setIsEditing(false); // Reset editing mode when closing the popover
+    setIsEditing(false); // Reset editing mode when closing the popover
   };
 
   const open = Boolean(anchorEl);
@@ -135,6 +146,7 @@ function PostCard({ post }) {
     setValue,
   } = methods;
 
+  // post slide
   const onSubmit = (data) => {
     if (!data.image && post.image) {
       data.image = post.image;
@@ -238,7 +250,7 @@ function PostCard({ post }) {
                     multiline
                     fullWidth
                     rows={4}
-                    placeholder={post.content}
+                    // placeholder={post.content}
                     sx={{
                       "& fieldset": {
                         borderWidth: `1px !important`,
@@ -270,7 +282,8 @@ function PostCard({ post }) {
                       type="cancel"
                       variant="contained"
                       size="small"
-                      // loading={isSubmitting || isLoading}
+                      onClose={handleCloseModal} //
+                      loading={isSubmitting || isLoading}
                     >
                       Cancel
                     </LoadingButton>
